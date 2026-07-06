@@ -1,4 +1,18 @@
-let currentLang="en";
+
+async function loadFirebaseProducts(){
+  try{
+    if(!window.firebaseProductsReady) return;
+
+    await window.firebaseProductsReady;
+
+    if(window.firebaseItems && window.firebaseItems.length > 0){
+      window.menuItems = window.firebaseItems;
+      console.log("Loaded products from Firebase:", window.menuItems.length);
+    }
+  }catch(error){
+    console.log("Firebase load failed, using data.js", error);
+  }
+}let currentLang="en";
 let currentCategoryId=null;
 
 const ui={
@@ -90,14 +104,14 @@ function renderStatic(){
 }
 
 function productsOf(catId){
-  return menuItems.filter(p=>p.category===catId);
+  return window.menuItems.filter(p=>p.category===catId);
 }
 
 function renderCategories(){
   const grid=$("categoryGrid");
   grid.innerHTML="";
 
-  menuCategories.forEach(c=>{
+  window.menuCategories.forEach(c=>{
     const count=productsOf(c.id).length;
     const card=document.createElement("article");
     card.className="cat-card";
@@ -253,12 +267,8 @@ document.addEventListener("keydown",e=>{
 document.addEventListener("DOMContentLoaded", async ()=>{
   renderStatic();
 
-  if (window.firebaseProductsReady) {
-    try {
-      await window.firebaseProductsReady;
-    } catch (error) {
-      console.log("Firebase loading error:", error);
-    }
+  if (window.loadFirebaseProducts) {
+    await window.loadFirebaseProducts();
   }
 
   renderCategories();

@@ -5075,3 +5075,5 @@ const menuItems = [
     }
   }
 ];
+window.menuCategories = menuCategories;
+window.menuItems = menuItems;
