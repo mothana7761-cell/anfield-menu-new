@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anfield Cafe Pub Menu</title>
+  <meta name="description" content="Anfield Cafe Pub digital menu - Taksim Istanbul." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn" onclick="toggleMenu()">☰</button>
+    <div class="brand-mini">ANFIELD <span>CAFE PUB</span></div>
+    <a class="icon-btn wa" href="https://wa.me/905313692933" target="_blank">💬</a>
+  </header>
+
+  <aside id="sideMenu" class="side-menu">
+    <h3>Anfield Cafe Pub</h3>
+    <button onclick="scrollToBlock('home')">Home</button>
+    <button onclick="scrollToBlock('categories')">Menu</button>
+    <button onclick="scrollToBlock('contact')">Contact</button>
+    <a href="tel:+905313692933">📞 Call</a>
+    <a href="https://wa.me/905313692933" target="_blank">💬 WhatsApp</a>
+  </aside>
+  <div id="overlay" class="overlay" onclick="toggleMenu(false)"></div>
+
+  <section id="home" class="hero">
+    <div class="hero-card">
+      <div class="logo-box">ANFIELD</div>
+      <p id="heroKicker" class="kicker">Welcome to</p>
+      <h1>ANFIELD <span>CAFE PUB</span></h1>
+      <p id="heroText" class="hero-text">Food, drinks, shisha and great moments in Taksim.</p>
+
+      <div class="langs">
+        <button class="active" onclick="setLanguage('en', this)">English</button>
+        <button onclick="setLanguage('ar', this)">العربية</button>
+        <button onclick="setLanguage('tr', this)">Türkçe</button>
+      </div>
+
+      <div class="search-wrap">
+        <input id="searchInput" oninput="searchMenu()" placeholder="Search in menu..." />
+        <button onclick="clearSearch()">✕</button>
+      </div>
+
+      <div class="quick">
+        <button onclick="quickSearch('coffee')">Coffee</button>
+        <button onclick="quickSearch('pizza')">Pizza</button>
+        <button onclick="quickSearch('shisha')">Shisha</button>
+        <button onclick="quickSearch('burger')">Burger</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="searchSection" class="section hidden">
+    <div class="section-title">
+      <small id="searchSmall">Search</small>
+      <h2 id="searchTitle">Search Results</h2>
+    </div>
+    <div id="searchGrid" class="products-grid"></div>
+  </section>
+
+  <section id="categories" class="section">
+    <div class="section-title">
+      <small id="catSmall">Explore</small>
+      <h2 id="catTitle">Menu Categories</h2>
+      <p id="catDesc">Choose a category to view all items.</p>
+    </div>
+    <div id="categoryGrid" class="category-grid"></div>
+  </section>
+
+  <main id="productsSection" class="section hidden">
+    <button class="back-btn" onclick="closeCategory()">← Back</button>
+    <div class="section-title">
+      <small id="selectedSmall">Selected Category</small>
+      <h2 id="selectedTitle">Category</h2>
+    </div>
+    <div id="productsGrid" class="products-grid"></div>
+  </main>
+
+  <section id="popular" class="section">
+    <div class="section-title">
+      <small id="popularSmall">Recommended</small>
+      <h2 id="popularTitle">Popular Items</h2>
+    </div>
+    <div id="popularGrid" class="products-grid"></div>
+  </section>
+
+  <section id="contact" class="section contact">
+    <div class="section-title">
+      <small>Visit Us</small>
+      <h2>Contact & Social</h2>
+    </div>
+    <div class="contact-grid">
+      <a href="tel:+905313692933">📞 Call <span>+90 531 369 29 33</span></a>
+      <a href="https://wa.me/905313692933" target="_blank">💬 WhatsApp <span>Chat with us</span></a>
+      <a href="https://search.google.com/local/writereview?placeid=ChIJHQ8tjZi3yhQRETskn37Cy0Q&utm_source=chatgpt.com" target="_blank">⭐ Google Review <span>Rate us</span></a>
+      <a href="https://www.google.com/maps/search/?api=1&query=Anfield+Cafe+Pub+Istanbul" target="_blank">📍 Location <span>Open Maps</span></a>
+      <a href="https://www.instagram.com/anfield_cafepub/" target="_blank">📸 Instagram <span>Follow us</span></a>
+    </div>
+  </section>
+
+  <footer>
+    <strong>Anfield Cafe Pub</strong><br />
+    Food • Drinks • Shisha • Football<br />
+    © 2026
+  </footer>
+
+  <a class="float-wa" href="https://wa.me/905313692933" target="_blank">WhatsApp</a>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-bg" onclick="closeModal()"></div>
+    <div class="modal-card">
+      <button class="close" onclick="closeModal()">✕</button>
+      <div id="modalImg" class="modal-img"></div>
+      <div class="modal-body">
+        <small id="modalCat">Category</small>
+        <h2 id="modalName">Product</h2>
+        <p id="modalDesc">Description</p>
+        <div class="modal-price" id="modalPrice">Ask</div>
+        <a id="modalWa" target="_blank">Ask on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
