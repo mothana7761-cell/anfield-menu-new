@@ -250,8 +250,17 @@ document.addEventListener("keydown",e=>{
   }
 });
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", async ()=>{
   renderStatic();
+
+  if (window.firebaseProductsReady) {
+    try {
+      await window.firebaseProductsReady;
+    } catch (error) {
+      console.log("Firebase loading error:", error);
+    }
+  }
+
   renderCategories();
   renderPopular();
 });

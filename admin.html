@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anfield Admin</title>
+  <style>
+    body{margin:0;font-family:Arial;background:#0b0b0b;color:#fff;padding:20px}
+    .box{max-width:1100px;margin:auto}
+    h1{color:#d4af37}
+    .form,.item{background:#181818;border:1px solid #333;border-radius:18px;padding:18px;margin-bottom:15px}
+    input,select,textarea{width:100%;padding:12px;margin:7px 0;border-radius:10px;border:1px solid #444;background:#0f0f0f;color:#fff}
+    button{padding:12px 18px;border:0;border-radius:10px;background:#b51612;color:#fff;font-weight:bold;cursor:pointer}
+    .save{background:#25d366;color:#111}
+    .delete{background:#700}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+    label{color:#d4af37;font-weight:bold}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>لوحة إدارة Anfield Menu</h1>
+
+    <div class="form">
+      <h2>إضافة منتج جديد</h2>
+
+      <label>القسم</label>
+      <select id="category"></select>
+
+      <label>الاسم English</label>
+      <input id="nameEn">
+
+      <label>الاسم عربي</label>
+      <input id="nameAr">
+
+      <label>الاسم Turkish</label>
+      <input id="nameTr">
+
+      <label>الوصف English</label>
+      <textarea id="descEn"></textarea>
+
+      <label>الوصف عربي</label>
+      <textarea id="descAr"></textarea>
+
+      <label>الوصف Turkish</label>
+      <textarea id="descTr"></textarea>
+
+      <label>السعر</label>
+      <input id="price" placeholder="مثال: 450₺">
+
+      <label>الإيموجي / الرمز</label>
+      <input id="icon" placeholder="🍔">
+
+      <button type="button" onclick="alert('الزر يعمل'); addProduct();">إضافة المنتج</button>
+    </div>
+
+    <h2>المنتجات الحالية</h2>
+    <div id="products"></div>
+  </div>
+
+  <script src="data.js"></script>
+
+  <script type="module">
+    import {
+      db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, setDoc
+    } from "./firebase-config.js";
+
+    const categorySelect = document.getElementById("category");
+    const productsDiv = document.getElementById("products");
+
+    menuCategories.forEach(cat=>{
+      const opt=document.createElement("option");
+      opt.value=cat.id;
+      opt.textContent=cat.name.ar || cat.name.en;
+      categorySelect.appendChild(opt);
+    });
+
+    async function seedOldProducts(){
+      const snap = await getDocs(collection(db,"products"));
+      if(!snap.empty) return;
+
+      for(const p of menuItems){
+        await addDoc(collection(db,"products"), p);
+      }
+      alert("تم نقل المنتجات إلى Firebase أول مرة");
+    }
+
+    async function loadProducts(){
+      productsDiv.innerHTML="جاري التحميل...";
+      const snap = await getDocs(collection(db,"products"));
+      productsDiv.innerHTML="";
+
+      snap.forEach(d=>{
+        const p=d.data();
+        const id=d.id;
+
+        const div=document.createElement("div");
+        div.className="item";
+        div.innerHTML=`
+          <div class="grid">
+            <div>
+              <label>English</label>
+              <input id="en-${id}" value="${p.name?.en || ""}">
+            </div>
+            <div>
+              <label>عربي</label>
+              <input id="ar-${id}" value="${p.name?.ar || ""}">
+            </div>
+            <div>
+              <label>Turkish</label>
+              <input id="tr-${id}" value="${p.name?.tr || ""}">
+            </div>
+            <div>
+              <label>السعر</label>
+              <input id="price-${id}" value="${p.price || ""}">
+            </div>
+            <div>
+              <label>القسم</label>
+              <input id="cat-${id}" value="${p.category || ""}">
+            </div>
+            <div>
+              <label>الرمز</label>
+              <input id="icon-${id}" value="${p.icon || ""}">
+            </div>
+          </div>
+          <br>
+          <button class="save" onclick="saveProduct('${id}')">حفظ</button>
+          <button class="delete" onclick="removeProduct('${id}')">حذف</button>
+        `;
+        productsDiv.appendChild(div);
+      });
+    }
+
+    window.addProduct = async function(){
+      const product={
+        id:"custom-"+Date.now(),
+        category:document.getElementById("category").value,
+        icon:document.getElementById("icon").value || "🍽️",
+        price:document.getElementById("price").value || "Ask",
+        bestSeller:false,
+        special:false,
+        isNew:true,
+        spicy:false,
+        name:{
+          en:document.getElementById("nameEn").value,
+          ar:document.getElementById("nameAr").value,
+          tr:document.getElementById("nameTr").value
+        },
+        description:{
+          en:document.getElementById("descEn").value,
+          ar:document.getElementById("descAr").value,
+          tr:document.getElementById("descTr").value
+        }
+      };
+
+      await addDoc(collection(db,"products"), product);
+      alert("تمت إضافة المنتج");
+      loadProducts();
+    }
+
+    window.saveProduct = async function(id){
+      await updateDoc(doc(db,"products",id),{
+        "name.en":document.getElementById("en-"+id).value,
+        "name.ar":document.getElementById("ar-"+id).value,
+        "name.tr":document.getElementById("tr-"+id).value,
+        price:document.getElementById("price-"+id).value,
+        category:document.getElementById("cat-"+id).value,
+        icon:document.getElementById("icon-"+id).value
+      });
+      alert("تم الحفظ");
+    }
+
+    window.removeProduct = async function(id){
+      if(confirm("هل أنت متأكد من حذف المنتج؟")){
+        await deleteDoc(doc(db,"products",id));
+        loadProducts();
+      }
+    }
+
+    await seedOldProducts();
+    loadProducts();
+  </script>
+</body>
+</html>
